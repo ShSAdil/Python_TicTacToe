@@ -36,13 +36,13 @@ def toss():
         return 2
 
 def printBoard(board):
-    print('\n\t-------')
+    print('\n\t-------------')
     for row in board:
-        print('\t ', end='')
+        print('\t| ', end='')
         for col in row:
-            print(col, end=' ')
-        print()
-    print('\t-------\n')
+            print(col, end=' | ')
+        print('\n\t-------------')
+    print()
 
 def validMoves(board):
     moves = []
@@ -65,9 +65,49 @@ def makeMove(move, currentMove, board):
             count += 1
 
 def checkWin(board):
-    pass
+    for x in range(len(board)):
+        prev = board[x][0]
+        current = ''
+        if prev != '-':
+            for y in range(1, len(board)):
+                current = board[x][y]
+                if current != prev or current == '-':
+                    break
+                prev = current
+            else:
+                return True, 1 if current == 'X' else 2
+
+    for x in range(len(board)):
+        prev = board[0][x]
+        current = ''
+        if prev != '-':
+            for y in range(1, len(board)):
+                current = board[y][x]
+                if current != prev or current == '-':
+                    break
+                prev = current
+            else:
+                return True, 1 if current == 'X' else 2
+
+    diagonals = [[(0, 0), (1, 1), (2, 2)], [(0, 2), (1, 1), (2, 0)]]
+
+    for diagonal in diagonals:
+        prev = board[diagonal[0][0]][diagonal[0][1]]
+        current = ''
+        for cell in diagonal:
+            x, y = cell
+            current = board[x][y]
+            if prev != current or current == '-':
+                break
+            prev = current
+        else:
+            return True, 1 if current == 'X' else 2
+
+    return False, -1
 
 def game(firstTurn):
+    print('\n===========================| Game |===========================')
+
     board = [
         ['-', '-', '-'],
         ['-', '-', '-'],
@@ -93,6 +133,13 @@ def game(firstTurn):
             continue
 
         makeMove(move, currentMove, board)
+
+        won, player = checkWin(board)
+
+        if won:
+            printBoard(board)
+            print(f'* Congratulations! Player {player} won!')
+            break
 
         if currentMove == 'X':
             currentMove = 'O'
