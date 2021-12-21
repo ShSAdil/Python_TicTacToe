@@ -9,12 +9,12 @@ import random
 def welcomeMessage():
     print('================| Welcome to the Tic Tac Toe |================')
     print()
-    print('Player 1: X')
-    print('Player 2: O')
+    print('Player: X')
+    print('Computer: O')
 
 def toss():
     print('\n===========================| Toss |===========================')
-    print('Player 1. Select:\n(1) Heads\n(2) Tails')
+    print('Player. Select:\n(1) Heads\n(2) Tails')
     coin = int(input(': '))
 
     if coin not in [1, 2]:
@@ -29,10 +29,10 @@ def toss():
         print('\nIt was Tails!')
 
     if coin == win:
-        print('* Player 1 won the toss!')
+        print('* Player won the toss!')
         return 1
     else:
-        print('* Player 2 won the toss')
+        print('* Computer won the toss')
         return 2
 
 def printBoard(board):
@@ -63,6 +63,70 @@ def makeMove(move, currentMove, board):
             if count == move:
                 board[x][y] = currentMove
             count += 1
+
+def computerMove(board):
+    print('Computer making a move...')
+
+    bestScore = -101
+    bestMove = 0
+
+    count = 1
+    for x in range(len(board)):
+        for y in range(len(board[x])):
+            if board[x][y] == '-':
+                board[x][y] = 'O'
+                score = findBestMove(board, False)
+                board[x][y] = '-'
+                if score > bestScore:
+                    bestScore = score
+                    bestMove = count
+            count += 1
+
+    return bestMove
+
+def findBestMove(board, isPlayer):
+    if checkWin(board)[1] == 1:
+        return -100
+    elif checkWin(board)[1] == 2:
+        return 100
+    elif checkDraw(board):
+        return 0
+
+    if isPlayer:
+        bestScore = -101
+
+        for x in range(len(board)):
+            for y in range(len(board[x])):
+                if board[x][y] == '-':
+                    board[x][y] = 'O'
+                    score = findBestMove(board, False)
+                    board[x][y] = '-'
+                    if score > bestScore:
+                        bestScore = score
+
+        return bestScore
+
+    else:
+        bestScore = 101
+
+        for x in range(len(board)):
+            for y in range(len(board[x])):
+                if board[x][y] == '-':
+                    board[x][y] = 'X'
+                    score = findBestMove(board, True)
+                    board[x][y] = '-'
+                    if score < bestScore:
+                        bestScore = score
+
+        return bestScore
+
+def checkDraw(board):
+    for row in board:
+        for cell in row:
+            if cell == '-':
+                return False
+
+    return True
 
 def checkWin(board):
     for x in range(len(board)):
@@ -124,9 +188,9 @@ def game(firstTurn):
         print('Valid moves remaining:', validMoves(board))
 
         if currentMove == 'X':
-            move = int(input('Player 1\'s Turn: '))
+            move = int(input('Player\'s Turn: '))
         elif currentMove == 'O':
-            move = int(input('Player 2\'s Turn: '))
+            move = computerMove(board)
         
         if move not in validMoves(board):
             print('* Invalid Move!')
@@ -138,7 +202,10 @@ def game(firstTurn):
 
         if won:
             printBoard(board)
-            print(f'* Congratulations! Player {player} won!')
+            if player == 1:
+                print(f'* Congratulations! Player won!')
+            else:
+                print(f'* Congratulations! Computer won!')
             break
 
         if currentMove == 'X':
