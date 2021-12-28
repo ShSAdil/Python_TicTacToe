@@ -203,9 +203,9 @@ def game(firstTurn):
         if won:
             printBoard(board)
             if player == 1:
-                print(f'* Congratulations! Player won!')
+                print('* Congratulations! Player won!')
             else:
-                print(f'* Congratulations! Computer won!')
+                print('* Computer won! Try Again!')
             break
 
         if currentMove == 'X':
@@ -218,7 +218,15 @@ def game(firstTurn):
 
 def main():
     welcomeMessage()
-    firstTurn = toss()
-    game(firstTurn)
+
+    play = True
+
+    while play:
+        firstTurn = toss()
+        game(firstTurn)
+
+        playAgain = input('\nPress "y" to play another game: ')
+        if playAgain not in ['y', 'Y']:
+            play = False
 
 main()
